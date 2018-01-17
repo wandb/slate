@@ -60,7 +60,7 @@ python learn.py
 wandb run learn.py
 ```
 
-It's easy to configure WandB to work with one of your projects.  
+It's easy to configure Wandb to work with one of your projects.  
 
 Sign up for an account at <https://wandb.ai>
 
@@ -68,7 +68,7 @@ You will be prompted for a team name and a project name.  This will create a
 wandb directory that contains a settings file with your entity name and
 project name.
 
-Now you every time you run your training script with wandb, a new record will
+Now every time you run your training script with wandb, a new record will
 be added to https://wandb.ai/$ENTITY_NAME/$PROJECT_NAME.  Your training logs
 will be saved along with a snapshot of your latest commit.
 
