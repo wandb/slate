@@ -75,10 +75,17 @@ Early termination is a strategy to speed up hyperparameter search by killing off
 appear to have lower performance than successful training runs.
 
 Values | Meaning
--------   -------
+------- | -------
 envelope | Use an envelope method for early termination/
 Not Specified | Don't do early termination.
 
 ### Parameters
 
 The parameters dictionary specifies the ranges of configuration parameters.
+
+Values | Meaning
+------ | -------
+min: (float) max: (float) | Continuous values between min and max
+min: (int) max: (int) | Integers between min and max
+values: [a, b, c] | Discrete values
+value: | A constant
