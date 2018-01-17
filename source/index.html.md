@@ -5,7 +5,6 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - python--tensorflow: TensorFlow
   - python--keras: Keras
   - python--pytorch: Pytorch
-  - java--spark: Spark
 
 toc_footers:
   - <a href='https://wandb.ai'>Login to wandb</a>
@@ -24,12 +23,15 @@ search: true
 pip install wandb
 ```
 
-WandB is a productivity tool for building machine learning models.  We help you
-track everything you do, visualize your results and automate large-scale hyperparameter search.
+Wandb is a tool for people building machine learning models.  
 
+Wandb helps with:
 
+1.  Tracking, saving and reproducing models.  
+2.  Visualizing results across models.
+3.  Automating large-scale hyperparameter search.
 
-# Getting started
+# Getting Started
 
 ```shell
 # Initialize wandb in the root directory of your project
