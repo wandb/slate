@@ -547,14 +547,47 @@ wandb sweep sweep.yaml <span class="c"># returns SWEEP_ID.</span>
 <p>Early termination is a strategy to speed up hyperparameter search by killing off runs that
 appear to have lower performance than successful training runs.</p>
 
-<p>Values | Meaning</p>
-
-<hr>
-
-<p>envelope | Use an envelope method for early termination/
-Not Specified | Don&#39;t do early termination.</p>
+<table><thead>
+<tr>
+<th>Values</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>envelope</td>
+<td>Use an envelope method for early termination/</td>
+</tr>
+<tr>
+<td>Not Specified</td>
+<td>Don&#39;t do early termination.</td>
+</tr>
+</tbody></table>
 <h3 id='parameters'>Parameters</h3>
 <p>The parameters dictionary specifies the ranges of configuration parameters.</p>
+
+<table><thead>
+<tr>
+<th>Values</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>min: (float) max: (float)</td>
+<td>Continuous values between min and max</td>
+</tr>
+<tr>
+<td>min: (int) max: (int)</td>
+<td>Integers between min and max</td>
+</tr>
+<tr>
+<td>values: [a, b, c]</td>
+<td>Discrete values</td>
+</tr>
+<tr>
+<td>value:</td>
+<td>A constant</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
