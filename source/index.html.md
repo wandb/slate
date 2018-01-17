@@ -11,8 +11,9 @@ toc_footers:
   - <a href='https://wandb.ai'>Login to wandb</a>
 
 includes:
-  - sweep
   - logging
+  - sweep
+
 
 search: true
 ---

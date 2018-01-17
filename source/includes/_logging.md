@@ -41,7 +41,8 @@ Configurations is a way of automatically tracking the hyperparameters you used
 to build your model.
 
 You can set the configuration values directly and access them as ordinary variables, or
-you can import variables from tensorflow flags or argparse output.
+you can import variables from tensorflow flags or argparse objects to integrate
+with pre-existing code.
 
 ### File-Based Configs
 
@@ -63,15 +64,27 @@ be loaded into the config variable.
 
 You can tell wandb to load different config files with the command
 
-`wandb run --configs special-configs.yaml,config-defaults.yaml`
+> Automatically load the yaml file into the config object
 
+```shell
+wandb run train.py
+```
+
+> Change the config file used to load the config object
+
+```shell
+wandb run --configs special-configs.yaml
+```
+
+> Mutiple config files are allowed are allowed
+
+```shell
+wandb run --configs special-configs.yaml,extra-configs.yaml
+```
 
 ## Metrics
 
-Metrics are a way of automatically tracking information about how the model
-is performing.
 
-### History
 
 ```python--tensorflow
 run = wandb.init()
@@ -129,6 +142,10 @@ for epoch in range(1, args.epochs + 1):
   summary["Test Accuracy"] = test_accuracy
 
 ```
+Metrics are a way of automatically tracking information about how the model
+is performing.
+
+### History
 
 The history object is used to track metrics that change as the model runs.  Every
 time the history object is updated the metrics are tracked.
