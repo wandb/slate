@@ -203,7 +203,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;python--tensorflow&quot;,&quot;python--keras&quot;,&quot;python--pytorch&quot;,&quot;java--spark&quot;]">
+  <body class="index" data-languages="[&quot;python--tensorflow&quot;,&quot;python--keras&quot;,&quot;python--pytorch&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -216,7 +216,6 @@
               <a href="#" data-language-name="python--tensorflow">TensorFlow</a>
               <a href="#" data-language-name="python--keras">Keras</a>
               <a href="#" data-language-name="python--pytorch">Pytorch</a>
-              <a href="#" data-language-name="java--spark">Spark</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -227,7 +226,7 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
           </li>
           <li>
-            <a href="#getting-started" class="toc-h1 toc-link" data-title="Getting started">Getting started</a>
+            <a href="#getting-started" class="toc-h1 toc-link" data-title="Getting Started">Getting Started</a>
           </li>
           <li>
             <a href="#tracking-models" class="toc-h1 toc-link" data-title="Tracking Models">Tracking Models</a>
@@ -248,6 +247,14 @@
           </li>
           <li>
             <a href="#hyperparamer-search" class="toc-h1 toc-link" data-title="Hyperparamer Search">Hyperparamer Search</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#running-a-parameter-sweep" class="toc-h2 toc-link" data-title="Running a Parameter Sweep">Running a Parameter Sweep</a>
+                  </li>
+                  <li>
+                    <a href="#sweep-yaml-file" class="toc-h2 toc-link" data-title="Sweep.yaml File">Sweep.yaml File</a>
+                  </li>
+              </ul>
           </li>
       </div>
         <ul class="toc-footer">
@@ -260,9 +267,16 @@
         <h1 id='introduction'>Introduction</h1><pre class="highlight shell tab-shell"><code><span class="c"># Install wandb</span>
 pip install wandb
 </code></pre>
-<p>WandB is a productivity tool for building machine learning models.  We help you
-track everything you do, visualize your results and automate large-scale hyperparameter search.</p>
-<h1 id='getting-started'>Getting started</h1><pre class="highlight shell tab-shell"><code><span class="c"># Initialize wandb in the root directory of your project</span>
+<p>Wandb is a tool for people building machine learning models.  </p>
+
+<p>Wandb helps with:</p>
+
+<ol>
+<li> Tracking, saving and reproducing models.<br></li>
+<li> Visualizing results across models.</li>
+<li> Automating large-scale hyperparameter search.</li>
+</ol>
+<h1 id='getting-started'>Getting Started</h1><pre class="highlight shell tab-shell"><code><span class="c"># Initialize wandb in the root directory of your project</span>
 wandb init
 </code></pre>
 <blockquote>
@@ -455,14 +469,99 @@ a link is saved to the last git commit.  A diff patch is also created to the sta
 of the code at the time run in case there are uncommitted changes.</p>
 <pre class="highlight plaintext"><code># restores the code to the state it was in when run $RUN_ID was executed
 wandb restore $RUN_ID
-</code></pre><h1 id='hyperparamer-search'>Hyperparamer Search</h1>
+</code></pre><h1 id='hyperparamer-search'>Hyperparamer Search</h1><h2 id='running-a-parameter-sweep'>Running a Parameter Sweep</h2>
+<p>To run a parameter sweep:
+1. Initialize your project to use wandb.
+2. Create a sweep.yaml file specified below, which specified your training script, your parameter
+ranges and the search strategy.
+3. Initialize your sweep, which gives you a SWEEP_ID and a url to track all of
+your runs.
+4. Run wandb agent, which will get a set of parameter names and arguments from the
+wandb server and then run your training script with the parameters as arguments.  You can
+run as many agents as you like.</p>
+
+<blockquote>
+<p>Start a search from your projects root directory</p>
+</blockquote>
+<pre class="highlight shell tab-shell"><code>wandb init <span class="c"># If you haven't already initialized your project</span>
+wandb sweep sweep.yaml <span class="c"># returns SWEEP_ID.</span>
+</code></pre>
+<blockquote>
+<p>Start an agent</p>
+</blockquote>
+<pre class="highlight shell tab-shell"><code>wandb agent SWEEP_ID
+</code></pre><h2 id='sweep-yaml-file'>Sweep.yaml File</h2>
+<blockquote>
+<p>Example sweep.yaml</p>
+</blockquote>
+<pre class="highlight yaml tab-yaml"><code><span class="na">description</span><span class="pi">:</span> <span class="s">random sweep for my little cnn</span>
+
+<span class="c1"># Training script to run</span>
+<span class="na">program</span><span class="pi">:</span> <span class="s">cnn.py</span>  
+
+<span class="c1"># Method can be bayes, random, grid</span>
+<span class="na">method</span><span class="pi">:</span> <span class="s">bayes</span>
+
+<span class="c1"># Metric to optimize</span>
+<span class="na">metric</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">val_loss</span>
+  <span class="na">goal</span><span class="pi">:</span> <span class="s">minimize</span>
+
+<span class="c1"># Should we early terminate runs</span>
+<span class="na">early_terminate</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">envelope</span>
+
+<span class="c1"># Parameters to search over</span>
+<span class="na">parameters</span><span class="pi">:</span>
+  <span class="na">learning-rate</span><span class="pi">:</span>
+    <span class="na">min</span><span class="pi">:</span> <span class="s">0.1</span>
+    <span class="na">max</span><span class="pi">:</span> <span class="s">0.001</span>
+  <span class="na">optimizer</span><span class="pi">:</span>
+    <span class="na">values</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">adam"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">sgd"</span><span class="pi">]</span>
+  <span class="na">dropout</span><span class="pi">:</span>
+    <span class="na">min</span><span class="pi">:</span> <span class="s">0.01</span>
+    <span class="na">max</span><span class="pi">:</span> <span class="s">0.5</span>
+  <span class="na">epochs</span><span class="pi">:</span>
+    <span class="na">value</span><span class="pi">:</span> <span class="s">30</span>
+</code></pre><h3 id='method'>Method</h3>
+<table><thead>
+<tr>
+<th>Values</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>grid</td>
+<td>Grid Search - Will iterate over all possible sets of values in parameters.</td>
+</tr>
+<tr>
+<td>random</td>
+<td>Random Search - Will choose random sets of values</td>
+</tr>
+<tr>
+<td>bayes</td>
+<td>Bayesian Optimization - Uses a gaussian process to model the function and then chooses parameters to optimize probability of improvement</td>
+</tr>
+</tbody></table>
+<h3 id='early-terminate'>Early Terminate</h3>
+<p>Early termination is a strategy to speed up hyperparameter search by killing off runs that
+appear to have lower performance than successful training runs.</p>
+
+<p>Values | Meaning</p>
+
+<hr>
+
+<p>envelope | Use an envelope method for early termination/
+Not Specified | Don&#39;t do early termination.</p>
+<h3 id='parameters'>Parameters</h3>
+<p>The parameters dictionary specifies the ranges of configuration parameters.</p>
+
       </div>
       <div class="dark-box">
           <div class="lang-selector">
                 <a href="#" data-language-name="python--tensorflow">TensorFlow</a>
                 <a href="#" data-language-name="python--keras">Keras</a>
                 <a href="#" data-language-name="python--pytorch">Pytorch</a>
-                <a href="#" data-language-name="java--spark">Spark</a>
           </div>
       </div>
     </div>
