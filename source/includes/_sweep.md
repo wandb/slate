@@ -5,6 +5,7 @@
 ## Running a Parameter Sweep
 
 To run a parameter sweep:
+
 1. Initialize your project to use wandb.
 2. Create a sweep.yaml file specified below, which specified your training script, your parameter
 ranges and the search strategy.
