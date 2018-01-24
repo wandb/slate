@@ -470,15 +470,18 @@ of the code at the time run in case there are uncommitted changes.</p>
 <pre class="highlight plaintext"><code># restores the code to the state it was in when run $RUN_ID was executed
 wandb restore $RUN_ID
 </code></pre><h1 id='hyperparamer-search'>Hyperparamer Search</h1><h2 id='running-a-parameter-sweep'>Running a Parameter Sweep</h2>
-<p>To run a parameter sweep:
-1. Initialize your project to use wandb.
-2. Create a sweep.yaml file specified below, which specified your training script, your parameter
-ranges and the search strategy.
-3. Initialize your sweep, which gives you a SWEEP_ID and a url to track all of
-your runs.
-4. Run wandb agent, which will get a set of parameter names and arguments from the
+<p>To run a parameter sweep:</p>
+
+<ol>
+<li>Initialize your project to use wandb.</li>
+<li>Create a sweep.yaml file specified below, which specified your training script, your parameter
+ranges and the search strategy.</li>
+<li>Initialize your sweep, which gives you a SWEEP_ID and a url to track all of
+your runs.</li>
+<li>Run wandb agent, which will get a set of parameter names and arguments from the
 wandb server and then run your training script with the parameters as arguments.  You can
-run as many agents as you like.</p>
+run as many agents as you like.</li>
+</ol>
 
 <blockquote>
 <p>Start a search from your projects root directory</p>
