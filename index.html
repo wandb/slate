@@ -227,6 +227,11 @@
           </li>
           <li>
             <a href="#getting-started" class="toc-h1 toc-link" data-title="Getting Started">Getting Started</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#automated-environments" class="toc-h2 toc-link" data-title="Automated Environments">Automated Environments</a>
+                  </li>
+              </ul>
           </li>
           <li>
             <a href="#tracking-models" class="toc-h1 toc-link" data-title="Tracking Models">Tracking Models</a>
@@ -311,6 +316,25 @@ will be saved along with a snapshot of your latest commit.</p>
 <aside class="notice">
 You can always rerun *wandb init* to change your project's settings.
 </aside>
+<h2 id='automated-environments'>Automated Environments</h2><pre class="highlight shell tab-shell"><code><span class="c"># This is secret and shouldn't be checked into version control</span>
+<span class="nv">WANDB_API_KEY</span><span class="o">=</span><span class="nv">$YOUR_API_KEY</span>
+<span class="c"># Description is optional</span>
+<span class="nv">WANDB_DESCRIPTION</span><span class="o">=</span><span class="s2">"</span><span class="nv">$SHORT_MESSAGE</span><span class="s2">"</span>
+</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># Only needed if you don't checkin the wandb/settings file</span>
+<span class="nv">WANDB_ENTITY</span><span class="o">=</span><span class="nv">$username</span>
+<span class="nv">WANDB_PROJECT</span><span class="o">=</span><span class="nv">$project</span>
+</code></pre><pre class="highlight python tab-python"><code><span class="c"># Only needed if you don't checkin the wandb/settings file</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">'wandb'</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre><pre class="highlight python tab-python"><code><span class="c"># If you don't want to call your script with the wandb run wrapper</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'WANDB_MODE'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'run'</span>
+</code></pre>
+<p>When you are running your script in an automated environment, you can set environment variables before the script runs or within the script.  <strong>WANDB_API_KEY</strong> must be set if <code>wandb login</code> hasn&#39;t been run on the remote machine.  Optionally you can set <strong>WANDB_DESCRIPTION</strong> to something that will become the name of your runs in the UI.</p>
+
+<p>If you have run <code>wandb init</code> in the directory of your training script a directory named <em>wandb</em> will be created and will contain a settings file with your entity and project set in it.  If you check this file in, you do not need to set <strong>WANDB_ENTITY</strong> and <strong>WANDB_PROJECT</strong>.  If you want to set these dynamically or don&#39;t wish to checkin this file, you can use the environment variables.</p>
+
+<p>If you chose not to checkin the <code>wandb/settings</code> file with your project, a directory named <code>wandb</code> must exist in the same directory that the script is run in.</p>
+
+<p>If you don&#39;t want to run your script with the <code>wandb run</code> wrapper, you must set the <strong>WANDB_MODE</strong> environment variable to &quot;run&quot; to have your runs synced to the cloud.  Otherwise, just be sure your automated process calls your script like: <code>wandb run python train.py --args</code></p>
 <h1 id='tracking-models'>Tracking Models</h1><h2 id='configurations'>Configurations</h2><pre class="highlight python tab-python--tensorflow"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span> <span class="c"># get the config object</span>
 <span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
