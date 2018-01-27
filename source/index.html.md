@@ -101,7 +101,7 @@ os.makedirs('wandb', exist_ok=True)
 os.environ['WANDB_MODE'] = 'run'
 ```
 
-When you are running your script in an automated environment, you can set environment variables before the script runs or within the script.  **WANDB_API_KEY** must be set if `wandb login` hasn't been run on the remote machine.  Optionally you can set **WANDB_DESCRIPTION** to something that will become the name of your runs in the UI.
+When you are running your script in an automated environment, you can set environment variables before the script runs or within the script.  **WANDB_API_KEY** must be set if `wandb login` hasn't been run on the remote machine, you can find it [here](https://app.wandb.ai/profile).  Optionally you can set **WANDB_DESCRIPTION** to something that will become the name of your runs in the UI.
 
 If you have run `wandb init` in the directory of your training script a directory named *wandb* will be created and will contain a settings file with your entity and project set in it.  If you check this file in, you do not need to set **WANDB_ENTITY** and **WANDB_PROJECT**.  If you want to set these dynamically or don't wish to checkin this file, you can use the environment variables.
 
