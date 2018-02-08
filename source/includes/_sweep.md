@@ -53,8 +53,8 @@ early_terminate:
 # Parameters to search over
 parameters:
   learning-rate:
-    min: 0.1
-    max: 0.001
+    min: 0.001
+    max: 0.1
   optimizer:
     values: ["adam", "sgd"]
   dropout:
