@@ -76,7 +76,7 @@ wandb run train.py
 wandb run --configs special-configs.yaml
 ```
 
-> Mutiple config files are allowed are allowed
+> Mutiple config files are allowed
 
 ```shell
 wandb run --configs special-configs.yaml,extra-configs.yaml
