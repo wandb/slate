@@ -1,4 +1,3 @@
-
 # Hyperparamer Search
 
 
@@ -6,7 +5,7 @@
 
 To run a parameter sweep:
 
-1. Initialize your project to use wandb.
+1. Initialize your project to use wandb in the cloud.
 2. Create a sweep.yaml file specified below, which specified your training script, your parameter
 ranges and the search strategy.
 3. Initialize your sweep, which gives you a SWEEP_ID and a url to track all of

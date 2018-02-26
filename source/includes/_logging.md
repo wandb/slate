@@ -3,38 +3,32 @@
 
 ```python--tensorflow
 run = wandb.init()
-config = run.config # get the config object
-config.epochs = 4   # config variables are saved to the cloud
-                    # with a run every time they're set
+run.config.epochs = 4   # config variables are saved to the cloud
 
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '/tmp/data')
 flags.DEFINE_integer('batch_size', 128, 'Batch size.')
-config.update(flags.FLAGS)  # adds all of the tensorflow flags as config variables
+run.config.update(flags.FLAGS)  # adds all of the tensorflow flags as config variables
 ```
 
 ```python--keras
 run = wandb.init()
-config = run.config # get the config object
-config.epochs = 4   # config variables are saved to the cloud
-                    # with a run every time they're set
+run.config.epochs = 4   # config variables are saved to the cloud
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                      help='input batch size for training (default: 8)')
-config.update(args) # adds all of the arguments as config variables
+run.config.update(args) # adds all of the arguments as config variables
 ```
 
 ```python--pytorch
 run = wandb.init()
-config = run.config # get the config object
-config.epochs = 4   # config variables are saved to the cloud
-                    # with a run every time they're set
+run.config.epochs = 4   # config variables are saved to the cloud
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                      help='input batch size for training (default: 8)')
-config.update(args) # adds all of the arguments as config variables
+run.config.update(args) # adds all of the arguments as config variables
 ```
 
 Configurations is a way of automatically tracking the hyperparameters you used
@@ -82,54 +76,37 @@ wandb run --configs special-configs.yaml
 wandb run --configs special-configs.yaml,extra-configs.yaml
 ```
 
-## Metrics
-
-
+## History
 
 ```python--tensorflow
-run = wandb.init()
-history = run.history
-summary = run.summary
+run = wandb.init(config=flags.FLAGS)
 
 # Start training
 with tf.Session() as sess:
   sess.run(init)
 
-  for step in range(1, FLAGS.num_steps+1):
-      batch_x, batch_y = mnist.train.next_batch(FLAGS.batch_size)
+  for step in range(1, run.config.num_steps+1):
+      batch_x, batch_y = mnist.train.next_batch(run.config.batch_size)
       # Run optimization op (backprop)
       sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
       # Calculate batch loss and accuracy
-      loss, acc = sess.run([loss_op, accuracy], feed_dict={X: batch_x,
-                                                               Y: batch_y})
+      loss, acc = sess.run([loss_op, accuracy], feed_dict={X: batch_x, Y: batch_y})
 
-      history.add({'acc': acc, 'loss':loss})   # log accuracy and loss
-      summary['acc'] = acc  
-      summary['loss'] = loss
-
+      run.history.add({'acc': acc, 'loss':loss})   # log accuracy and loss
 ```
 
 ```python--keras
+run = wandb.init(config=args)
 
-run = wandb.init()
-history = run.history
-summary = run.summary
+def keras_log(epoch, logs):
+  run.history.add({'loss': logs['loss'], 'acc': logs['acc']})
+  run.summary['acc'] = logs['acc']
 
-def log_discriminator(epoch, logs):
-  history.add({
-            'loss': logs['loss'],
-            'acc': logs['acc']})
-  summary['acc'] = logs['acc'])
-
-
-wandb_logging_callback = LambdaCallback(on_epoch_end=log_generator)
-model.fit(train, labels, callbacks=[wandb_logging_callback])
+model.fit(train, labels, callbacks=[LambdaCallback(keras_log)])
 ```
 
 ```python--pytorch
-run = wandb.init()
-history = run.history
-summary = run.summary
+run = wandb.init(config=args)
 
 for epoch in range(1, args.epochs + 1):
   train_loss = train(epoch)
@@ -137,67 +114,97 @@ for epoch in range(1, args.epochs + 1):
 
   torch.save(model.state_dict(), 'model')
 
-  history.add({"Train Loss": train_loss,
-                   "Test Loss": test_loss})
-  summary["Test Accuracy"] = test_accuracy
-
+  run.history.add({"loss": train_loss, "val_loss": test_loss})
 ```
-Metrics are a way of automatically tracking information about how the model
-is performing.
 
-### History
+The history object is used to track metrics that change as the model runs.  You can access 
+a mutable dictionary of metrics via `run.history.row`.  The row will not be persisted until 
+`run.history.add` is called.  
 
-The history object is used to track metrics that change as the model runs.  Every
-time the history object is updated the metrics are tracked.
+### Context Manager
 
-### Summary
+We provide a context manager that automatically calls `add`
+and accepts an optional boolean to help keep nested code clean.
+
+> Context manager
+
+```python
+with run.history.step(batch_idx % log_interval == 0):
+  run.history.row.update({"metric": 1})
+  if run.history.compute:
+    # Something expensive here
+```
+
+## Media
+
+```python
+run.history.row["examples"] = [wandb.Image(numpy_array_or_pil, caption="Label")]
+run.history.add()
+```
+
+The history object also accepts rich media.  Currently only images are supported.  Media is added
+by supplying a list of wandb media objects.
+
+
+If a numpy array is supplied we assume it's gray scale if the last dimension is 1, RGB if it's 3, 
+and RGBA if it's 4.  If the array contains floats we convert them to ints between 0 and 255.  
+You can specify a [mode](https://pillow.readthedocs.io/en/3.1.x/handbook/concepts.html#concept-modes) 
+manually or just supply a `PIL.Image`.  We recommend you don't add more than 20-50 images per step.
+
+
+## Summary
+
+```python
+run = wandb.init(config=args)
+
+for epoch in range(1, args.epochs + 1):
+  test_loss, test_accuracy = test()
+  run.summary["accuracy"] = test_accuracy
+```
 
 The summary statistics are used to track single metrics per model.  If a summary
-metric is modified, only the updated state is saved.
+metric is modified, only the updated state is saved.  We automatically set summary to the last
+history row added unless you modify it manually.
 
-### Keras Callback
-> Simpler way to track metrics in keras using WandbKerasCallback
+## Keras Callback
 
-```python--keras
+> Simpler way to track metrics in keras using wandb.callbacks.Keras
+
+```python
 import wandb
-from wandb.wandb_keras import WandbKerasCallback
-
 run = wandb.init()
-config = run.config
 
 model.fit(X_train, y_train,  validation_data=(X_test, y_test),
-    callbacks=[WandbKerasCallback()])
+          callbacks=[wandb.callbacks.Keras()])
 ```
 
-If you are using keras, you can use the WandbKerasCallback to automatically save
+If you are using keras, you can use the Keras callback to automatically save
 all the metrics and the loss values tracked in `model.fit`.
 
 ## Saving Models
 
 ```python--keras
 import wandb
-from wandb.wandb_keras import WandbKerasCallback
-
 run = wandb.init()
 
 model.fit(X_train, y_train,  validation_data=(X_test, y_test),
-    callbacks=[WandbKerasCallback()])
-
+    callbacks=[wandb.callbacks.Keras()])
 model.save(os.path.join(run.dir, "model.h5")) #
 ```
 
 Wandb will save to the cloud any files put in wandb's run directory.
 
-Wandb's run directories are inside the wandb directory and the path looks like run-20171023_105053-3o4933r0 where 20171023_105053 is the timestamp and 3o4933r0
-is the ID of the run.
+Wandb's run directories are inside the wandb directory and the path looks like _run-20171023_105053-3o4933r0_ where _20171023_105053_ is the timestamp and _3o4933r0_ is the ID of the run.
 
-## Saving Code State
-
-When training scripts are run with `wandb run train.py` from the command line
-a link is saved to the last git commit.  A diff patch is also created to the state
-of the code at the time run in case there are uncommitted changes.
+## Restoring Code State
 
 ```
-# restores the code to the state it was in when run $RUN_ID was executed
+# creates a branch and restores the code to the state it was in when run $RUN_ID was executed
 wandb restore $RUN_ID
 ```
+
+When `wandb.init` is called from your script, a link is saved to the last git commit if the code
+is in a git repository.  A diff patch is also created in case there are uncommitted changes or changes
+that are out of sync with your remote.
+
+

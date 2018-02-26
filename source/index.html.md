@@ -11,6 +11,7 @@ toc_footers:
 
 includes:
   - logging
+  - board
   - sweep
 
 
@@ -23,9 +24,9 @@ search: true
 pip install wandb
 ```
 
-Wandb is a tool for people building machine learning models.  
+WandB is a tool for people building machine learning models.  
 
-Wandb helps with:
+WandB helps with:
 
 1.  Tracking, saving and reproducing models.  
 2.  Visualizing results across models.
@@ -33,43 +34,48 @@ Wandb helps with:
 
 # Getting Started
 
+## Running Locally
+
+> Near the top of your training script add our initialization code:
+
+```python
+# Inside my model training code
+import wandb
+run = wandb.init(config={"batch_size": 32, "hidden_nodes": 128})
+
+# Run my complicated training loop...
+```
+
+```shell
+# Run your script normally
+python learn.py
+```
+
+WandB can be run locally or used as a cloud service.  The fastest way to see the tool
+in action is to import the wandb module and call init, passing in your hyper-parameters.
+After running your script normally, you can call `wandb board` from the same directory
+to start a local webserver that provides the interface.
+
+## Syncing runs to the cloud
+
 ```shell
 # Initialize wandb in the root directory of your project
 wandb init
 ```
 
-> Near the top of your code add initialization code:
-
-```python
-# Inside my model training code
-import wandb
-run = wandb.init()
-
-# Run my complicated training loop...
-```
-
-> Modify your command to run training
-
 ```shell
-# The old way to run your training script (still works, but no magic)
-python learn.py
-```
-
-```shell
-# The new way to run your training script (saves logs, and so much more...)
+# This runs your script and syncs all metrics and metadata to the cloud
 wandb run learn.py
 ```
 
-It's easy to configure Wandb to work with one of your projects.  
+If you want to sync your runs to the cloud, first [sign up](https://app.wandb.ai/login?invited).
 
-Sign up for an account at <https://wandb.ai>
-
-You will be prompted for a team name and a project name.  This will create a
-wandb directory that contains a settings file with your entity name and
-project name.
+After running `wandb init` from the command line, you will be prompted for a team name and a project name.  This will create a
+wandb directory that contains a settings file with the information you provided.  You can optionally check the **wandb/settings** file 
+into version control.  All other files and folders in this directory are automatically ignored.
 
 Now every time you run your training script with wandb, a new record will
-be added to https://wandb.ai/$ENTITY_NAME/$PROJECT_NAME.  Your training logs
+be added to _https://app.wandb.ai/**$ENTITY_NAME**/**$PROJECT_NAME**_.  Your training logs
 will be saved along with a snapshot of your latest commit.
 
 <aside class="notice">
