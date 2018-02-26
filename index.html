@@ -229,6 +229,12 @@
             <a href="#getting-started" class="toc-h1 toc-link" data-title="Getting Started">Getting Started</a>
               <ul class="toc-list-h2">
                   <li>
+                    <a href="#running-locally" class="toc-h2 toc-link" data-title="Running Locally">Running Locally</a>
+                  </li>
+                  <li>
+                    <a href="#syncing-runs-to-the-cloud" class="toc-h2 toc-link" data-title="Syncing runs to the cloud">Syncing runs to the cloud</a>
+                  </li>
+                  <li>
                     <a href="#automated-environments" class="toc-h2 toc-link" data-title="Automated Environments">Automated Environments</a>
                   </li>
               </ul>
@@ -240,13 +246,30 @@
                     <a href="#configurations" class="toc-h2 toc-link" data-title="Configurations">Configurations</a>
                   </li>
                   <li>
-                    <a href="#metrics" class="toc-h2 toc-link" data-title="Metrics">Metrics</a>
+                    <a href="#history" class="toc-h2 toc-link" data-title="History">History</a>
+                  </li>
+                  <li>
+                    <a href="#media" class="toc-h2 toc-link" data-title="Media">Media</a>
+                  </li>
+                  <li>
+                    <a href="#summary" class="toc-h2 toc-link" data-title="Summary">Summary</a>
+                  </li>
+                  <li>
+                    <a href="#keras-callback" class="toc-h2 toc-link" data-title="Keras Callback">Keras Callback</a>
                   </li>
                   <li>
                     <a href="#saving-models" class="toc-h2 toc-link" data-title="Saving Models">Saving Models</a>
                   </li>
                   <li>
-                    <a href="#saving-code-state" class="toc-h2 toc-link" data-title="Saving Code State">Saving Code State</a>
+                    <a href="#restoring-code-state" class="toc-h2 toc-link" data-title="Restoring Code State">Restoring Code State</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#wandb-board" class="toc-h1 toc-link" data-title="WandB Board">WandB Board</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#contributing" class="toc-h2 toc-link" data-title="Contributing">Contributing</a>
                   </li>
               </ul>
           </li>
@@ -272,45 +295,44 @@
         <h1 id='introduction'>Introduction</h1><pre class="highlight shell tab-shell"><code><span class="c"># Install wandb</span>
 pip install wandb
 </code></pre>
-<p>Wandb is a tool for people building machine learning models.  </p>
+<p>WandB is a tool for people building machine learning models.  </p>
 
-<p>Wandb helps with:</p>
+<p>WandB helps with:</p>
 
 <ol>
 <li> Tracking, saving and reproducing models.<br></li>
 <li> Visualizing results across models.</li>
 <li> Automating large-scale hyperparameter search.</li>
 </ol>
-<h1 id='getting-started'>Getting Started</h1><pre class="highlight shell tab-shell"><code><span class="c"># Initialize wandb in the root directory of your project</span>
-wandb init
-</code></pre>
+<h1 id='getting-started'>Getting Started</h1><h2 id='running-locally'>Running Locally</h2>
 <blockquote>
-<p>Near the top of your code add initialization code:</p>
+<p>Near the top of your training script add our initialization code:</p>
 </blockquote>
 <pre class="highlight python tab-python"><code><span class="c"># Inside my model training code</span>
 <span class="kn">import</span> <span class="nn">wandb</span>
-<span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s">"batch_size"</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s">"hidden_nodes"</span><span class="p">:</span> <span class="mi">128</span><span class="p">})</span>
 
 <span class="c"># Run my complicated training loop...</span>
-</code></pre>
-<blockquote>
-<p>Modify your command to run training</p>
-</blockquote>
-<pre class="highlight shell tab-shell"><code><span class="c"># The old way to run your training script (still works, but no magic)</span>
+</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># Run your script normally</span>
 python learn.py
-</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># The new way to run your training script (saves logs, and so much more...)</span>
+</code></pre>
+<p>WandB can be run locally or used as a cloud service.  The fastest way to see the tool
+in action is to import the wandb module and call init, passing in your hyper-parameters.
+After running your script normally, you can call <code>wandb board</code> from the same directory
+to start a local webserver that provides the interface.</p>
+<h2 id='syncing-runs-to-the-cloud'>Syncing runs to the cloud</h2><pre class="highlight shell tab-shell"><code><span class="c"># Initialize wandb in the root directory of your project</span>
+wandb init
+</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># This runs your script and syncs all metrics and metadata to the cloud</span>
 wandb run learn.py
 </code></pre>
-<p>It&#39;s easy to configure Wandb to work with one of your projects.  </p>
+<p>If you want to sync your runs to the cloud, first <a href="https://app.wandb.ai/login?invited">sign up</a>.</p>
 
-<p>Sign up for an account at <a href="https://wandb.ai">https://wandb.ai</a></p>
-
-<p>You will be prompted for a team name and a project name.  This will create a
-wandb directory that contains a settings file with your entity name and
-project name.</p>
+<p>After running <code>wandb init</code> from the command line, you will be prompted for a team name and a project name.  This will create a
+wandb directory that contains a settings file with the information you provided.  You can optionally check the <strong>wandb/settings</strong> file 
+into version control.  All other files and folders in this directory are automatically ignored.</p>
 
 <p>Now every time you run your training script with wandb, a new record will
-be added to https://wandb.ai/$ENTITY_NAME/$PROJECT_NAME.  Your training logs
+be added to <em>https://app.wandb.ai/<strong>$ENTITY_NAME</strong>/<strong>$PROJECT_NAME</strong></em>.  Your training logs
 will be saved along with a snapshot of your latest commit.</p>
 
 <aside class="notice">
@@ -336,32 +358,26 @@ You can always rerun *wandb init* to change your project's settings.
 
 <p>If you don&#39;t want to run your script with the <code>wandb run</code> wrapper, you must set the <strong>WANDB_MODE</strong> environment variable to &quot;run&quot; to have your runs synced to the cloud.  Otherwise, just be sure your automated process calls your script like: <code>wandb run python train.py --args</code></p>
 <h1 id='tracking-models'>Tracking Models</h1><h2 id='configurations'>Configurations</h2><pre class="highlight python tab-python--tensorflow"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span> <span class="c"># get the config object</span>
-<span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
-                    <span class="c"># with a run every time they're set</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
 
 <span class="n">flags</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">flags</span>
 <span class="n">flags</span><span class="o">.</span><span class="n">DEFINE_string</span><span class="p">(</span><span class="s">'data_dir'</span><span class="p">,</span> <span class="s">'/tmp/data'</span><span class="p">)</span>
 <span class="n">flags</span><span class="o">.</span><span class="n">DEFINE_integer</span><span class="p">(</span><span class="s">'batch_size'</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="s">'Batch size.'</span><span class="p">)</span>
-<span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">flags</span><span class="o">.</span><span class="n">FLAGS</span><span class="p">)</span>  <span class="c"># adds all of the tensorflow flags as config variables</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">flags</span><span class="o">.</span><span class="n">FLAGS</span><span class="p">)</span>  <span class="c"># adds all of the tensorflow flags as config variables</span>
 </code></pre><pre class="highlight python tab-python--keras"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span> <span class="c"># get the config object</span>
-<span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
-                    <span class="c"># with a run every time they're set</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--batch-size'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">'N'</span><span class="p">,</span>
                      <span class="n">help</span><span class="o">=</span><span class="s">'input batch size for training (default: 8)'</span><span class="p">)</span>
-<span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="c"># adds all of the arguments as config variables</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="c"># adds all of the arguments as config variables</span>
 </code></pre><pre class="highlight python tab-python--pytorch"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span> <span class="c"># get the config object</span>
-<span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
-                    <span class="c"># with a run every time they're set</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># config variables are saved to the cloud</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--batch-size'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">'N'</span><span class="p">,</span>
                      <span class="n">help</span><span class="o">=</span><span class="s">'input batch size for training (default: 8)'</span><span class="p">)</span>
-<span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="c"># adds all of the arguments as config variables</span>
+<span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="c"># adds all of the arguments as config variables</span>
 </code></pre>
 <p>Configurations is a way of automatically tracking the hyperparameters you used
 to build your model.</p>
@@ -398,46 +414,31 @@ be loaded into the config variable.</p>
 <pre class="highlight shell tab-shell"><code>wandb run --configs special-configs.yaml
 </code></pre>
 <blockquote>
-<p>Mutiple config files are allowed are allowed</p>
+<p>Mutiple config files are allowed</p>
 </blockquote>
 <pre class="highlight shell tab-shell"><code>wandb run --configs special-configs.yaml,extra-configs.yaml
-</code></pre><h2 id='metrics'>Metrics</h2><pre class="highlight python tab-python--tensorflow"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">history</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">history</span>
-<span class="n">summary</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">summary</span>
+</code></pre><h2 id='history'>History</h2><pre class="highlight python tab-python--tensorflow"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">flags</span><span class="o">.</span><span class="n">FLAGS</span><span class="p">)</span>
 
 <span class="c"># Start training</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
   <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
 
-  <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">FLAGS</span><span class="o">.</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-      <span class="n">batch_x</span><span class="p">,</span> <span class="n">batch_y</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="n">FLAGS</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+      <span class="n">batch_x</span><span class="p">,</span> <span class="n">batch_y</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
       <span class="c"># Run optimization op (backprop)</span>
       <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">train_op</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">X</span><span class="p">:</span> <span class="n">batch_x</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">batch_y</span><span class="p">})</span>
       <span class="c"># Calculate batch loss and accuracy</span>
-      <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">loss_op</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">X</span><span class="p">:</span> <span class="n">batch_x</span><span class="p">,</span>
-                                                               <span class="n">Y</span><span class="p">:</span> <span class="n">batch_y</span><span class="p">})</span>
+      <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">loss_op</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">X</span><span class="p">:</span> <span class="n">batch_x</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">batch_y</span><span class="p">})</span>
 
-      <span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s">'acc'</span><span class="p">:</span> <span class="n">acc</span><span class="p">,</span> <span class="s">'loss'</span><span class="p">:</span><span class="n">loss</span><span class="p">})</span>   <span class="c"># log accuracy and loss</span>
-      <span class="n">summary</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span>  
-      <span class="n">summary</span><span class="p">[</span><span class="s">'loss'</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+      <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s">'acc'</span><span class="p">:</span> <span class="n">acc</span><span class="p">,</span> <span class="s">'loss'</span><span class="p">:</span><span class="n">loss</span><span class="p">})</span>   <span class="c"># log accuracy and loss</span>
+</code></pre><pre class="highlight python tab-python--keras"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
 
-</code></pre><pre class="highlight python tab-python--keras"><code>
-<span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">history</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">history</span>
-<span class="n">summary</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">summary</span>
+<span class="k">def</span> <span class="nf">keras_log</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="p">):</span>
+  <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s">'loss'</span><span class="p">:</span> <span class="n">logs</span><span class="p">[</span><span class="s">'loss'</span><span class="p">],</span> <span class="s">'acc'</span><span class="p">:</span> <span class="n">logs</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]})</span>
+  <span class="n">run</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">logs</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">log_discriminator</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="p">):</span>
-  <span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span>
-            <span class="s">'loss'</span><span class="p">:</span> <span class="n">logs</span><span class="p">[</span><span class="s">'loss'</span><span class="p">],</span>
-            <span class="s">'acc'</span><span class="p">:</span> <span class="n">logs</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]})</span>
-  <span class="n">summary</span><span class="p">[</span><span class="s">'acc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">logs</span><span class="p">[</span><span class="s">'acc'</span><span class="p">])</span>
-
-
-<span class="n">wandb_logging_callback</span> <span class="o">=</span> <span class="n">LambdaCallback</span><span class="p">(</span><span class="n">on_epoch_end</span><span class="o">=</span><span class="n">log_generator</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">wandb_logging_callback</span><span class="p">])</span>
-</code></pre><pre class="highlight python tab-python--pytorch"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">history</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">history</span>
-<span class="n">summary</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">summary</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">LambdaCallback</span><span class="p">(</span><span class="n">keras_log</span><span class="p">)])</span>
+</code></pre><pre class="highlight python tab-python--pytorch"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
   <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
@@ -445,59 +446,89 @@ be loaded into the config variable.</p>
 
   <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s">'model'</span><span class="p">)</span>
 
-  <span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s">"Train Loss"</span><span class="p">:</span> <span class="n">train_loss</span><span class="p">,</span>
-                   <span class="s">"Test Loss"</span><span class="p">:</span> <span class="n">test_loss</span><span class="p">})</span>
-  <span class="n">summary</span><span class="p">[</span><span class="s">"Test Accuracy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_accuracy</span>
-
+  <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s">"loss"</span><span class="p">:</span> <span class="n">train_loss</span><span class="p">,</span> <span class="s">"val_loss"</span><span class="p">:</span> <span class="n">test_loss</span><span class="p">})</span>
 </code></pre>
-<p>Metrics are a way of automatically tracking information about how the model
-is performing.</p>
-<h3 id='history'>History</h3>
-<p>The history object is used to track metrics that change as the model runs.  Every
-time the history object is updated the metrics are tracked.</p>
-<h3 id='summary'>Summary</h3>
-<p>The summary statistics are used to track single metrics per model.  If a summary
-metric is modified, only the updated state is saved.</p>
-<h3 id='keras-callback'>Keras Callback</h3>
-<blockquote>
-<p>Simpler way to track metrics in keras using WandbKerasCallback</p>
-</blockquote>
-<pre class="highlight python tab-python--keras"><code><span class="kn">import</span> <span class="nn">wandb</span>
-<span class="kn">from</span> <span class="nn">wandb.wandb_keras</span> <span class="kn">import</span> <span class="n">WandbKerasCallback</span>
+<p>The history object is used to track metrics that change as the model runs.  You can access 
+a mutable dictionary of metrics via <code>run.history.row</code>.  The row will not be persisted until 
+<code>run.history.add</code> is called.  </p>
+<h3 id='context-manager'>Context Manager</h3>
+<p>We provide a context manager that automatically calls <code>add</code>
+and accepts an optional boolean to help keep nested code clean.</p>
 
+<blockquote>
+<p>Context manager</p>
+</blockquote>
+<pre class="highlight python tab-python"><code><span class="k">with</span> <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">%</span> <span class="n">log_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+  <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">"metric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+  <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">compute</span><span class="p">:</span>
+    <span class="c"># Something expensive here</span>
+</code></pre><h2 id='media'>Media</h2><pre class="highlight python tab-python"><code><span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="s">"examples"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">wandb</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">numpy_array_or_pil</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s">"Label"</span><span class="p">)]</span>
+<span class="n">run</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</code></pre>
+<p>The history object also accepts rich media.  Currently only images are supported.  Media is added
+by supplying a list of wandb media objects.</p>
+
+<p>If a numpy array is supplied we assume it&#39;s gray scale if the last dimension is 1, RGB if it&#39;s 3, 
+and RGBA if it&#39;s 4.  If the array contains floats we convert them to ints between 0 and 255.<br>
+You can specify a <a href="https://pillow.readthedocs.io/en/3.1.x/handbook/concepts.html#concept-modes">mode</a> 
+manually or just supply a <code>PIL.Image</code>.  We recommend you don&#39;t add more than 20-50 images per step.</p>
+<h2 id='summary'>Summary</h2><pre class="highlight python tab-python"><code><span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+  <span class="n">test_loss</span><span class="p">,</span> <span class="n">test_accuracy</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+  <span class="n">run</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s">"accuracy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_accuracy</span>
+</code></pre>
+<p>The summary statistics are used to track single metrics per model.  If a summary
+metric is modified, only the updated state is saved.  We automatically set summary to the last
+history row added unless you modify it manually.</p>
+<h2 id='keras-callback'>Keras Callback</h2>
+<blockquote>
+<p>Simpler way to track metrics in keras using wandb.callbacks.Keras</p>
+</blockquote>
+<pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">wandb</span>
 <span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>  <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">WandbKerasCallback</span><span class="p">()])</span>
+          <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">wandb</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">Keras</span><span class="p">()])</span>
 </code></pre>
-<p>If you are using keras, you can use the WandbKerasCallback to automatically save
+<p>If you are using keras, you can use the Keras callback to automatically save
 all the metrics and the loss values tracked in <code>model.fit</code>.</p>
 <h2 id='saving-models'>Saving Models</h2><pre class="highlight python tab-python--keras"><code><span class="kn">import</span> <span class="nn">wandb</span>
-<span class="kn">from</span> <span class="nn">wandb.wandb_keras</span> <span class="kn">import</span> <span class="n">WandbKerasCallback</span>
-
 <span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>  <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">WandbKerasCallback</span><span class="p">()])</span>
-
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">wandb</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">Keras</span><span class="p">()])</span>
 <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="nb">dir</span><span class="p">,</span> <span class="s">"model.h5"</span><span class="p">))</span> <span class="c">#</span>
 </code></pre>
 <p>Wandb will save to the cloud any files put in wandb&#39;s run directory.</p>
 
-<p>Wandb&#39;s run directories are inside the wandb directory and the path looks like run-20171023_105053-3o4933r0 where 20171023_105053 is the timestamp and 3o4933r0
-is the ID of the run.</p>
-<h2 id='saving-code-state'>Saving Code State</h2>
-<p>When training scripts are run with <code>wandb run train.py</code> from the command line
-a link is saved to the last git commit.  A diff patch is also created to the state
-of the code at the time run in case there are uncommitted changes.</p>
-<pre class="highlight plaintext"><code># restores the code to the state it was in when run $RUN_ID was executed
+<p>Wandb&#39;s run directories are inside the wandb directory and the path looks like <em>run-20171023_105053-3o4933r0</em> where <em>20171023_105053</em> is the timestamp and <em>3o4933r0</em> is the ID of the run.</p>
+<h2 id='restoring-code-state'>Restoring Code State</h2><pre class="highlight plaintext"><code># creates a branch and restores the code to the state it was in when run $RUN_ID was executed
 wandb restore $RUN_ID
-</code></pre><h1 id='hyperparamer-search'>Hyperparamer Search</h1><h2 id='running-a-parameter-sweep'>Running a Parameter Sweep</h2>
+</code></pre>
+<p>When <code>wandb.init</code> is called from your script, a link is saved to the last git commit if the code
+is in a git repository.  A diff patch is also created in case there are uncommitted changes or changes
+that are out of sync with your remote.</p>
+<h1 id='wandb-board'>WandB Board</h1>
+<blockquote>
+<p>Starts the local server from the current directory</p>
+</blockquote>
+<pre class="highlight shell tab-shell"><code>wandb board
+</code></pre>
+<blockquote>
+<p>Starts the server on top of a custom directory</p>
+</blockquote>
+<pre class="highlight shell tab-shell"><code>wandb board --logdir<span class="o">=</span>~/other/directory
+</code></pre>
+<p>WandB board is an open source and local version of our metric tracking solution.  It scans a 
+local directory for existing and new runs and starts a webserver that provides the interface and backend.</p>
+<h2 id='contributing'>Contributing</h2>
+<p>If you would like to contribute to the board, checkout the <a href="https://github.com/wandb/client/blob/master/DEVELOPMENT.md">repository</a></p>
+<h1 id='hyperparamer-search'>Hyperparamer Search</h1><h2 id='running-a-parameter-sweep'>Running a Parameter Sweep</h2>
 <p>To run a parameter sweep:</p>
 
 <ol>
-<li>Initialize your project to use wandb.</li>
+<li>Initialize your project to use wandb in the cloud.</li>
 <li>Create a sweep.yaml file specified below, which specified your training script, your parameter
 ranges and the search strategy.</li>
 <li>Initialize your sweep, which gives you a SWEEP_ID and a url to track all of
