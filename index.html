@@ -310,30 +310,40 @@ pip install wandb
 </blockquote>
 <pre class="highlight python tab-python"><code><span class="c"># Inside my model training code</span>
 <span class="kn">import</span> <span class="nn">wandb</span>
-<span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s">"batch_size"</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s">"hidden_nodes"</span><span class="p">:</span> <span class="mi">128</span><span class="p">})</span>
+<span class="n">run</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 
-<span class="c"># Run my complicated training loop...</span>
-</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># Run your script normally</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">config</span> 
+<span class="n">config</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">config</span><span class="o">.</span><span class="n">hidden_layer_size</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="c"># Run my training code</span>
+<span class="n">my_train_loop</span><span class="p">()</span>
+</code></pre><pre class="highlight shell tab-shell"><code><span class="c"># Run your script normally from the commandline</span>
 python learn.py
 </code></pre>
-<p>WandB can be run locally or used as a cloud service.  The fastest way to see the tool
-in action is to import the wandb module and call init, passing in your hyper-parameters.
-After running your script normally, you can call <code>wandb board</code> from the same directory
-to start a local webserver that provides the interface.</p>
+<p>WandB can be run locally or used as a cloud service.</p>
+
+<p>Running WandB locally:</p>
+
+<ol>
+<li>Add the wandb.init() line near the top of your training script</li>
+<li>From the commandline run <code>wandb board</code> from the same directory you ran your training script. </li>
+</ol>
 <h2 id='syncing-runs-to-the-cloud'>Syncing runs to the cloud</h2><pre class="highlight shell tab-shell"><code><span class="c"># Initialize wandb in the root directory of your project</span>
 wandb init
 </code></pre><pre class="highlight shell tab-shell"><code><span class="c"># This runs your script and syncs all metrics and metadata to the cloud</span>
 wandb run learn.py
 </code></pre>
-<p>If you want to sync your runs to the cloud, first <a href="https://app.wandb.ai/login?invited">sign up</a>.</p>
+<p>Running WandB with the wandb.ai cloud service:</p>
 
-<p>After running <code>wandb init</code> from the command line, you will be prompted for a team name and a project name.  This will create a
+<ol>
+<li>Sign up for an account by going to our <a href="https://app.wandb.ai/login?invited">sign up page</a>.</li>
+<li><p>Run <code>wandb init</code> from the command line.  You will be prompted for a team name and a project name.  This will create a
 wandb directory that contains a settings file with the information you provided.  You can optionally check the <strong>wandb/settings</strong> file 
-into version control.  All other files and folders in this directory are automatically ignored.</p>
-
-<p>Now every time you run your training script with wandb, a new record will
-be added to <em>https://app.wandb.ai/<strong>$ENTITY_NAME</strong>/<strong>$PROJECT_NAME</strong></em>.  Your training logs
-will be saved along with a snapshot of your latest commit.</p>
+into version control.  All other files and folders in the wandb directory are automatically ignored.</p></li>
+<li><p>Run your training script as <code>wandb run learn.py</code>.  Now, a new record will
+be added to <em>https://app.wandb.ai/<strong>$ENTITY_NAME</strong>/<strong>$PROJECT_NAME</strong></em>.  Your training logs will be saved along with a snapshot of your latest commit.</p></li>
+</ol>
 
 <aside class="notice">
 You can always rerun *wandb init* to change your project's settings.
