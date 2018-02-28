@@ -41,20 +41,27 @@ WandB helps with:
 ```python
 # Inside my model training code
 import wandb
-run = wandb.init(config={"batch_size": 32, "hidden_nodes": 128})
+run = wandb.init()
 
-# Run my complicated training loop...
+config = run.config 
+config.dropout = 0.2
+config.hidden_layer_size = 128
+
+# Run my training code
+my_train_loop()
 ```
 
 ```shell
-# Run your script normally
+# Run your script normally from the commandline
 python learn.py
 ```
 
-WandB can be run locally or used as a cloud service.  The fastest way to see the tool
-in action is to import the wandb module and call init, passing in your hyper-parameters.
-After running your script normally, you can call `wandb board` from the same directory
-to start a local webserver that provides the interface.
+WandB can be run locally or used as a cloud service.
+
+Running WandB locally:
+
+1. Add the wandb.init() line near the top of your training script
+2. From the commandline run `wandb board` from the same directory you ran your training script. 
 
 ## Syncing runs to the cloud
 
@@ -68,15 +75,15 @@ wandb init
 wandb run learn.py
 ```
 
-If you want to sync your runs to the cloud, first [sign up](https://app.wandb.ai/login?invited).
+Running WandB with the wandb.ai cloud service:
 
-After running `wandb init` from the command line, you will be prompted for a team name and a project name.  This will create a
+1. Sign up for an account by going to our [sign up page](https://app.wandb.ai/login?invited).
+2. Run `wandb init` from the command line.  You will be prompted for a team name and a project name.  This will create a
 wandb directory that contains a settings file with the information you provided.  You can optionally check the **wandb/settings** file 
-into version control.  All other files and folders in this directory are automatically ignored.
+into version control.  All other files and folders in the wandb directory are automatically ignored.
 
-Now every time you run your training script with wandb, a new record will
-be added to _https://app.wandb.ai/**$ENTITY_NAME**/**$PROJECT_NAME**_.  Your training logs
-will be saved along with a snapshot of your latest commit.
+3. Run your training script as `wandb run learn.py`.  Now, a new record will
+be added to _https://app.wandb.ai/**$ENTITY_NAME**/**$PROJECT_NAME**_.  Your training logs will be saved along with a snapshot of your latest commit.
 
 <aside class="notice">
 You can always rerun *wandb init* to change your project's settings.
