@@ -11,7 +11,6 @@ toc_footers:
 
 includes:
   - logging
-  - board
   - sweep
 
 
@@ -37,6 +36,9 @@ WandB helps with:
 
 # Getting Started
 
+WandB is easy to install.  Once you have download the python library, you just need to add a few lines of code to your training script.
+
+<!---
 WandB can be run locally or used as a cloud service.  Either way integrating wandb is pretty simple.  You can see some example learning code with integrations using Pytorch, Keras and TensorFlow at <https://github.com/wandb/examples>.
 
 ## Running Locally
@@ -66,6 +68,8 @@ Running WandB locally:
 1. Add the line `run = wandb.init()` line near the top of your training script
 2. From the commandline run `wandb board` from the same directory you ran your training script. 
 3. Save configuration parameters in `run.config`, save output to `run.history` and save models to `run.dir`
+-->
+
 
 ## Syncing Runs to the Cloud
 
@@ -78,6 +82,7 @@ wandb init
 # This runs your script and syncs all metrics and metadata to the cloud
 wandb run learn.py
 ```
+
 
 Running WandB with the wandb.ai cloud service:
 
