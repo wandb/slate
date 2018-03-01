@@ -85,7 +85,29 @@ The parameters dictionary specifies the ranges of configuration parameters.
 
 Values | Meaning
 ------ | -------
+distribution: | A distribution from the distrbution table below.  If not specified, the sweep will set to uniform is max and min are set, categorical if values are set and constant if value is set.
 min: (float) max: (float) | Continuous values between min and max
 min: (int) max: (int) | Integers between min and max
 values: [a, b, c] | Discrete values
 value: | A constant
+mu: | Mean for normal or lognormal distributions
+sigma: | Std Dev for normal or lognormal distributions
+q: | Quantization parameter for quantized distributions
+
+### Distributions
+
+Supported distributions
+
+Name | Meaning
+---- | -------
+constant | Constant distribution.  Must specify value.
+categorical | Categorical distribution.  Must specify values.
+int_uniform | Uniform integer.  Must specify max and min as integers.
+uniform | Uniform continuous.  Must specify max and min as floats.
+q_uniform | Quantized uniform.  Returns  round(X / q) * q where X is uniform.  Q defaults to 1.
+log_uniform | Log uniform.  Number between exp(min) and exp(max) so that the logarithm of the return value is uniformly distributed.
+q_log_uniform | Quantized log uniform.  Returns  round(X / q) * q where X is log_uniform.  Q defaults to 1.
+normal | Normal distribution.  Value is chosen from normal distribution.  Can set mean mu (default 0) and std dev sigma (default 1).
+q_normal | Quantized normal distribution.  Returns  round(X / q) * q where X is normal.  Q defaults to 1.
+log_normal | Log normal distribution. Value is chosen from log normal distribution.  Can set mean mu (default 0) and std dev sigma (default 1).
+q_log_normal | Quantized log normal distribution.  Returns  round(X / q) * q where X is log_normal.  Q defaults to 1.

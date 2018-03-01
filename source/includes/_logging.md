@@ -1,6 +1,8 @@
 # Tracking Models
 ## Configurations
 
+![History](configuration.png)
+
 ```python--tensorflow
 run = wandb.init()
 run.config.epochs = 4   # config variables are saved to the cloud
@@ -56,7 +58,7 @@ batch_size:
 You can create a file called config-defaults.yaml and it will automatically
 be loaded into the config variable.
 
-You can tell wandb to load different config files with the command
+You can tell wandb to load different config files with the argument `--configs special-configs.yaml` which will load parameters from the file special-configs.yaml.
 
 > Automatically load the yaml file into the config object
 
@@ -77,6 +79,7 @@ wandb run --configs special-configs.yaml,extra-configs.yaml
 ```
 
 ## History
+![History](history.png)
 
 ```python--tensorflow
 run = wandb.init(config=flags.FLAGS)
@@ -117,9 +120,9 @@ for epoch in range(1, args.epochs + 1):
   run.history.add({"loss": train_loss, "val_loss": test_loss})
 ```
 
-The history object is used to track metrics that change as the model runs.  You can access 
-a mutable dictionary of metrics via `run.history.row`.  The row will not be persisted until 
-`run.history.add` is called.  
+The history object is used to track metrics that change as the model trains.  You can access 
+a mutable dictionary of metrics via `run.history.row`.  The row will be saved and a new row created when 
+`run.history.add` is called.  For simplicity, you can call run.history.add and pass in a dictionary of all the metrics you would like to save.
 
 ### Context Manager
 
@@ -154,6 +157,8 @@ manually or just supply a `PIL.Image`.  We recommend you don't add more than 20-
 
 ## Summary
 
+![Summary](summary.png)
+
 ```python
 run = wandb.init(config=args)
 
@@ -182,6 +187,8 @@ If you are using keras, you can use the Keras callback to automatically save
 all the metrics and the loss values tracked in `model.fit`.
 
 ## Saving Models
+
+![Saved](saved.png)
 
 ```python--keras
 import wandb
