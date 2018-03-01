@@ -67,7 +67,7 @@ Running WandB locally:
 2. From the commandline run `wandb board` from the same directory you ran your training script. 
 3. Save configuration parameters in `run.config`, save output to `run.history` and save models to `run.dir`
 
-## Syncing runs to the cloud
+## Syncing Runs to the Cloud
 
 ```shell
 # Initialize wandb in the root directory of your project
