@@ -1,4 +1,4 @@
-# Hyperparamer Search
+# Hyperparameter Search
 
 
 ## Running a Parameter Sweep
