@@ -4,33 +4,36 @@
 ![History](configuration.png)
 
 ```python--tensorflow
-run = wandb.init()
-run.config.epochs = 4   # config variables are saved to the cloud
+import wandb
+wandb.init()
+wandb.config.epochs = 4   # config variables are saved to the cloud
 
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '/tmp/data')
 flags.DEFINE_integer('batch_size', 128, 'Batch size.')
-run.config.update(flags.FLAGS)  # adds all of the tensorflow flags as config variables
+wandb.config.update(flags.FLAGS)  # adds all of the tensorflow flags as config variables
 ```
 
 ```python--keras
-run = wandb.init()
-run.config.epochs = 4   # config variables are saved to the cloud
+import wandb
+wandb.init()
+wandb.config.epochs = 4   # config variables are saved to the cloud
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                      help='input batch size for training (default: 8)')
-run.config.update(args) # adds all of the arguments as config variables
+wandb.config.update(args) # adds all of the arguments as config variables
 ```
 
 ```python--pytorch
-run = wandb.init()
-run.config.epochs = 4   # config variables are saved to the cloud
+import wandb
+wandb.init()
+wandb.config.epochs = 4   # config variables are saved to the cloud
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                      help='input batch size for training (default: 8)')
-run.config.update(args) # adds all of the arguments as config variables
+wandb.config.update(args) # adds all of the arguments as config variables
 ```
 
 Configurations is a way of automatically tracking the hyperparameters you used
@@ -82,7 +85,8 @@ wandb run --configs special-configs.yaml,extra-configs.yaml
 ![History](history.png)
 
 ```python--tensorflow
-run = wandb.init(config=flags.FLAGS)
+import wandb
+wandb.init(config=flags.FLAGS)
 
 # Start training
 with tf.Session() as sess:
@@ -95,21 +99,22 @@ with tf.Session() as sess:
       # Calculate batch loss and accuracy
       loss, acc = sess.run([loss_op, accuracy], feed_dict={X: batch_x, Y: batch_y})
 
-      run.history.add({'acc': acc, 'loss':loss})   # log accuracy and loss
+      wandb.log({'acc': acc, 'loss':loss})   # log accuracy and loss
 ```
 
 ```python--keras
-run = wandb.init(config=args)
+import wandb
+wandb.init(config=args)
 
 def keras_log(epoch, logs):
-  run.history.add({'loss': logs['loss'], 'acc': logs['acc']})
-  run.summary['acc'] = logs['acc']
+  wandb.log({'loss': logs['loss'], 'acc': logs['acc']})
 
 model.fit(train, labels, callbacks=[LambdaCallback(keras_log)])
 ```
 
 ```python--pytorch
-run = wandb.init(config=args)
+import wandb
+wandb.init(config=args)
 
 for epoch in range(1, args.epochs + 1):
   train_loss = train(epoch)
@@ -117,12 +122,12 @@ for epoch in range(1, args.epochs + 1):
 
   torch.save(model.state_dict(), 'model')
 
-  run.history.add({"loss": train_loss, "val_loss": test_loss})
+  wandb.log({"loss": train_loss, "val_loss": test_loss})
 ```
 
 The history object is used to track metrics that change as the model trains.  You can access 
-a mutable dictionary of metrics via `run.history.row`.  The row will be saved and a new row created when 
-`run.history.add` is called.  For simplicity, you can call run.history.add and pass in a dictionary of all the metrics you would like to save.
+a mutable dictionary of metrics via `wandb.run.history.row`.  The row will be saved and a new row created when 
+`wandb.run.history.add` is called.  For simplicity, you can call `wandb.log` and pass in a dictionary of all the metrics you would like to save.
 
 ### Context Manager
 
@@ -132,17 +137,17 @@ and accepts an optional boolean to help keep nested code clean.
 > Context manager
 
 ```python
-with run.history.step(batch_idx % log_interval == 0):
-  run.history.row.update({"metric": 1})
-  if run.history.compute:
+with wandb.run.history.step(batch_idx % log_interval == 0):
+  wandb.run.history.row.update({"metric": 1})
+  if wandb.run.history.compute:
     # Something expensive here
 ```
 
 ## Media
 
 ```python
-run.history.row["examples"] = [wandb.Image(numpy_array_or_pil, caption="Label")]
-run.history.add()
+wandb.run.history.row["examples"] = [wandb.Image(numpy_array_or_pil, caption="Label")]
+wandb.run.history.add()
 ```
 
 The history object also accepts rich media.  Currently only images are supported.  Media is added
@@ -154,29 +159,13 @@ and RGBA if it's 4.  If the array contains floats we convert them to ints betwee
 You can specify a [mode](https://pillow.readthedocs.io/en/3.1.x/handbook/concepts.html#concept-modes) 
 manually or just supply a `PIL.Image`.  We recommend you don't add more than 20-50 images per step.
 
-## Summary
-
-![Summary](summary.png)
-
-```python
-run = wandb.init(config=args)
-
-for epoch in range(1, args.epochs + 1):
-  test_loss, test_accuracy = test()
-  run.summary["accuracy"] = test_accuracy
-```
-
-The summary statistics are used to track single metrics per model.  If a summary
-metric is modified, only the updated state is saved.  We automatically set summary to the last
-history row added unless you modify it manually.
-
 ## Keras Callback
 
 > Simpler way to track metrics in keras using wandb.callbacks.Keras
 
 ```python
 import wandb
-run = wandb.init()
+wandb.init()
 
 model.fit(X_train, y_train,  validation_data=(X_test, y_test),
           callbacks=[wandb.callbacks.Keras()])
@@ -191,11 +180,11 @@ all the metrics and the loss values tracked in `model.fit`.
 
 ```python--keras
 import wandb
-run = wandb.init()
+wandb.init()
 
 model.fit(X_train, y_train,  validation_data=(X_test, y_test),
     callbacks=[wandb.callbacks.Keras()])
-model.save(os.path.join(run.dir, "model.h5")) #
+model.save(os.path.join(wandb.run.dir, "model.h5")) #
 ```
 
 Wandb will save to the cloud any files put in wandb's run directory.
